@@ -61,7 +61,7 @@
                                 <input
                                         class="input"
                                         placeholder="johngonzales13"
-                                        v-model.number="credentials.userName"
+                                        v-model.number="credentials.username"
                                         type="text"
                                 />
                             </div>
@@ -113,6 +113,7 @@
                                 <label class="label">Latitude</label>
                                 <input
                                         placeholder="41.327953"
+                                        v-model="credentials.address.lat"
                                         class="input"
                                         type="text"
                                 />
@@ -122,6 +123,7 @@
                                 <label class="label">Longitude</label>
                                 <input
                                         class="input"
+                                        v-model="credentials.address.lng"
                                         placeholder="19.819025"
                                         type="text"
                                 />
@@ -160,7 +162,7 @@ const modal = useUserStore();
 let isOpen = computed(() => modal.isOpen)
 
 // Computed Data that used to understand when useGoogleLocation is active or not
-let checkboxClicked = computed(() => modal.checkboxClicked)
+let checkboxClicked = ref(modal.checkboxClicked)
 
 // Used to show the Latitude and Longitude when we have activated useGoogleLocation
 const useGoogleLocation = () => {
@@ -171,9 +173,25 @@ const useGoogleLocation = () => {
 const addressRef = ref()
 onMounted(() => {
     const autocomplete = new google.maps.places.Autocomplete(addressRef.value, {
-        types: ['address'],
-        fields: ['address_components']
+        types: ['geocode'],
     })
+
+    google.maps.event.addListener(autocomplete, 'place_changed', () => {
+
+        let place = autocomplete.getPlace();
+        credentials.address.street = place.name
+        credentials.address.city = place.vicinity
+        credentials.address.lat = place.geometry.location.lat()
+        credentials.address.lng = place.geometry.location.lng()
+        place.address_components.forEach((component) => {
+            if (component.types.includes('postal_code')) {
+                credentials.address.zipcode = component.long_name
+            } else {
+                credentials.address.zipcode = ''
+            }
+        })
+    })
+
 })
 
 const closeModal = () => {
@@ -182,18 +200,20 @@ const closeModal = () => {
 
 const credentials = reactive({
     name: '',
-    userName: '',
+    username: '',
     email: '',
     phone: null,
     address: {
         street: '',
         city: '',
         zipcode: null,
+        lat: null,
+        lng: null
     }
 })
 
+// Email validation
 const emailError = ref('')
-const phoneError = ref('')
 const validateEmail = () => {
     if (!credentials.email) {
         emailError.value = 'Email is required'
@@ -204,6 +224,8 @@ const validateEmail = () => {
     }
 }
 
+// Phone validation
+const phoneError = ref('')
 const validatePhone = () => {
     if (!credentials.phone) {
         phoneError.value = 'Phone is required'
@@ -213,6 +235,8 @@ const validatePhone = () => {
         phoneError.value = ''
     }
 }
+
+// Method that create a new user
 const submitForm = () => {
     if (phoneError.value === '' && emailError.value === '') {
         modal.addUser(credentials)

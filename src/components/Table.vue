@@ -79,34 +79,38 @@
 
 <script setup>
 import {useUserStore} from "@/stores/userStore";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted} from "vue";
 import Modal from "@/components/CreateModal.vue";
 import UpdateModal from "@/components/UpdateModal.vue";
 
+// Store
 const userStore = useUserStore();
+
+// Computed Data to catch list of users from store
 const users = computed(() => userStore.users);
 
+// Computed Data to catch user data when we click edit button
 const userSelected = computed(() => userStore.user)
 
-const modal = useUserStore();
+// Computed Data to Open Create Modal
+let isOpen = computed(() => userStore.isOpen)
 
-let isOpen = computed(() => modal.isOpen)
-let updateModalOpen = computed(() => modal.updateModalOpen)
+// Computed Data to open Update Modal
+let updateModalOpen = computed(() => userStore.updateModalOpen)
 
+// Method that Open Create Modal
 const openModal = () => {
-    modal.openModal();
+    userStore.openModal();
 }
 
+// Method that open Update Modal
 const openUpdateModal = (user) => {
-    modal.openUpdateModal(user)
+    userStore.openUpdateModal(user)
 }
 
+// Method that delete user
 const deleteUser = (id) => {
     userStore.deleteUser(id);
-}
-
-const updateUser = (user) => {
-    userStore.updateUser(user)
 }
 
 onMounted(() => {

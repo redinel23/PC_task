@@ -112,6 +112,7 @@
                                 <label class="label">Latitude</label>
                                 <input
                                         placeholder="41.327953"
+                                        v-model="userCredentials.address.lat"
                                         class="input"
                                         type="text"
                                 />
@@ -121,6 +122,7 @@
                                 <label class="label">Longitude</label>
                                 <input
                                         class="input"
+                                        v-model="userCredentials.address.lng"
                                         placeholder="19.819025"
                                         type="text"
                                 />
@@ -159,23 +161,25 @@ const props = defineProps({
 const userCredentials = reactive({
     id: props.user.id,
     name: props.user.name,
-    username: props.user.userName,
+    username: props.user.username,
     email: props.user.email,
     phone: props.user.phone,
     address: {
         street: props.user.address.street,
         city: props.user.address.city,
-        zipcode: props.user.address.zipcode
+        zipcode: props.user.address.zipcode,
+        lat: props.user.address.lat,
+        lng: props.user.address.lng
     }
 })
- // Store
+// Store
 const modal = useUserStore();
 
 // Computed Data that is used to show and hide Modal
 let updateModalOpen = computed(() => modal.updateModalOpen)
 
 // Computed Data that catch if Use Google Location is used or not
-let checkboxClicked = computed(() => modal.checkboxClicked)
+let checkboxClicked = ref(modal.checkboxClicked)
 
 // Email Validation
 const emailError = ref('')

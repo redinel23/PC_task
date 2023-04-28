@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import axios from 'axios';
 
 interface User {
     id: number;
     name: string;
-    username:string;
+    username: string;
     email: string;
     phone: string;
     address: {
@@ -64,10 +64,9 @@ export const useUserStore = defineStore({
         closeModal() {
             this.isOpen = false;
         },
-        openUpdateModal(user:Array<any>) {
-          this.updateModalOpen = true
+        openUpdateModal(user: Array<any>) {
+            this.updateModalOpen = true
             this.user = user
-            console.log(user, 'user')
         },
         closeUpdateModal() {
             this.updateModalOpen = false
